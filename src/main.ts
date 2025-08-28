@@ -76,15 +76,17 @@ class BlissDraw{
         let eraseDrag = this.eraseDrag;
         let clickColour = this.clickColour;
         let clickSize = this.clickSize;
+
         //Draw the path of the line
-        if(!this.eraserMode){
+        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
              for(let i = 0; i < clickX.length; ++i){
             context.beginPath();
             if(clickDrag[i] && i){
-                //Draw the dragged path
+                //Draw the dragged path if it exists
                 context.moveTo(clickX[i - 1], clickY[i - 1]);
             }
             else{
+                //Finish off the path
                 context.moveTo(clickX[i] - 1, clickY[i]);
             }
             context.lineTo(clickX[i], clickY[i]);
@@ -93,8 +95,7 @@ class BlissDraw{
             context.stroke();
         }
         context.closePath();
-        }
-        else{
+        
             //eraser functionality
             for(let i = 0; i < eraseX.length; ++i){
                 if(eraseDrag[i] && i){
@@ -104,7 +105,6 @@ class BlissDraw{
                     context.clearRect(eraseX[i] - 1, eraseY[i], context.lineWidth, context.lineWidth);
                 }
                 context.clearRect(eraseX[i], eraseY[i], context.lineWidth, context.lineWidth);
-            }
         }
        
     }
@@ -133,6 +133,8 @@ class BlissDraw{
         this.eraseX = [];
         this.eraseY = [];
         this.eraseDrag = [];
+        this.clickColour = [];
+        this.clickSize = [];
     }
 
     private switchModes(){

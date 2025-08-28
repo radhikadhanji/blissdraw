@@ -112,34 +112,32 @@ var BlissDraw = /** @class */ (function () {
         var clickColour = this.clickColour;
         var clickSize = this.clickSize;
         //Draw the path of the line
-        if (!this.eraserMode) {
-            for (var i = 0; i < clickX.length; ++i) {
-                context.beginPath();
-                if (clickDrag[i] && i) {
-                    //Draw the dragged path
-                    context.moveTo(clickX[i - 1], clickY[i - 1]);
-                }
-                else {
-                    context.moveTo(clickX[i] - 1, clickY[i]);
-                }
-                context.lineTo(clickX[i], clickY[i]);
-                context.strokeStyle = clickColour[i];
-                context.lineWidth = clickSize[i];
-                context.stroke();
+        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var i = 0; i < clickX.length; ++i) {
+            context.beginPath();
+            if (clickDrag[i] && i) {
+                //Draw the dragged path if it exists
+                context.moveTo(clickX[i - 1], clickY[i - 1]);
             }
-            context.closePath();
+            else {
+                //Finish off the path
+                context.moveTo(clickX[i] - 1, clickY[i]);
+            }
+            context.lineTo(clickX[i], clickY[i]);
+            context.strokeStyle = clickColour[i];
+            context.lineWidth = clickSize[i];
+            context.stroke();
         }
-        else {
-            //eraser functionality
-            for (var i = 0; i < eraseX.length; ++i) {
-                if (eraseDrag[i] && i) {
-                    context.clearRect(eraseX[i - 1], eraseY[i - 1], context.lineWidth, context.lineWidth);
-                }
-                else {
-                    context.clearRect(eraseX[i] - 1, eraseY[i], context.lineWidth, context.lineWidth);
-                }
-                context.clearRect(eraseX[i], eraseY[i], context.lineWidth, context.lineWidth);
+        context.closePath();
+        //eraser functionality
+        for (var i = 0; i < eraseX.length; ++i) {
+            if (eraseDrag[i] && i) {
+                context.clearRect(eraseX[i - 1], eraseY[i - 1], context.lineWidth, context.lineWidth);
             }
+            else {
+                context.clearRect(eraseX[i] - 1, eraseY[i], context.lineWidth, context.lineWidth);
+            }
+            context.clearRect(eraseX[i], eraseY[i], context.lineWidth, context.lineWidth);
         }
     };
     BlissDraw.prototype.addClick = function (x, y, dragging) {
@@ -165,6 +163,8 @@ var BlissDraw = /** @class */ (function () {
         this.eraseX = [];
         this.eraseY = [];
         this.eraseDrag = [];
+        this.clickColour = [];
+        this.clickSize = [];
     };
     BlissDraw.prototype.switchModes = function () {
         //Switch between drawing and eraser modes
