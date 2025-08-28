@@ -43,6 +43,7 @@ class BlissDraw{
         canvas.addEventListener("touchcancel", this.cancelEventHandler);
 
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
+        document.getElementById('colour').addEventListener("click", this.colourEventHandler);
 
     }
 
@@ -81,8 +82,17 @@ class BlissDraw{
         this.clickDrag = [];
     }
 
+    private changeColour(){
+        //Change the colour of the pen
+        this.context.strokeStyle = "red";
+    }
+
     private clearEventHandler = () => {
         this.clearCanvas();
+    }
+
+    private colourEventHandler = () => {
+        this.changeColour();
     }
 
     private releaseEventHandler = () => {
