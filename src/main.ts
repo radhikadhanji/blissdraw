@@ -8,6 +8,13 @@ class BlissDraw{
     private clickX: number[] = [];
     private clickY: number[] = [];
     private clickDrag: boolean[] = [];
+    private eraseX: number[] = [];
+    private eraseY: number[] = [];
+    private eraseDrag: boolean[] = [];
+
+    //drawing modes
+    private drawingMode = false;
+    private eraserMode = false;
 
     constructor() {
         //Create drawing elements
@@ -45,6 +52,7 @@ class BlissDraw{
         //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
         document.getElementById('colour').addEventListener("click", this.colourEventHandler);
+        document.getElementById('modes').addEventListener("click", this.modeEventHandler);
         document.getElementById('sizeSlider').addEventListener("input", () => {
             let currentSize = (document.getElementById('sizeSlider') as HTMLInputElement).value;
             this.context.lineWidth = parseInt(currentSize);
@@ -56,8 +64,12 @@ class BlissDraw{
         let context = this.context;
         let clickDrag = this.clickDrag;
         let clickY = this.clickY;
+        let eraseX = this.eraseX;
+        let eraseY = this.eraseY;
+        let eraseDrag = this.eraseDrag;
         //Draw the path of the line
-        for(let i = 0; i < clickX.length; ++i){
+        if(!this.eraserMode){
+             for(let i = 0; i < clickX.length; ++i){
             context.beginPath();
             if(clickDrag[i] && i){
                 //Draw the dragged path
@@ -70,12 +82,33 @@ class BlissDraw{
             context.stroke();
         }
         context.closePath();
+        }
+        else{
+            //eraser functionality
+            for(let i = 0; i < eraseX.length; ++i){
+                if(eraseDrag[i] && i){
+                    context.clearRect(eraseX[i - 1], eraseY[i - 1], context.lineWidth, context.lineWidth);
+                }
+                else{
+                    context.clearRect(eraseX[i] - 1, eraseY[i], context.lineWidth, context.lineWidth);
+                }
+                context.clearRect(eraseX[i], eraseY[i], context.lineWidth, context.lineWidth);
+            }
+        }
+       
     }
 
     private addClick(x: number, y: number, dragging: boolean){
-        this.clickX.push(x);
-        this.clickY.push(y);
-        this.clickDrag.push(dragging);
+        if(!this.eraserMode){
+            this.clickX.push(x);
+            this.clickY.push(y);
+            this.clickDrag.push(dragging);
+        }
+        else{
+            this.eraseX.push(x);
+            this.eraseY.push(y);
+            this.eraseDrag.push(dragging);
+        }
     }
 
     private clearCanvas(){
@@ -84,6 +117,21 @@ class BlissDraw{
         this.clickX = [];
         this.clickY = [];
         this.clickDrag = [];
+        this.eraseX = [];
+        this.eraseY = [];
+        this.eraseDrag = [];
+    }
+
+    private switchModes(){
+        //Switch between drawing and eraser modes
+        let modeButton = document.getElementById('modes');
+        this.eraserMode = !this.eraserMode;
+        if(this.eraserMode){
+            modeButton.textContent = "Switch to Drawing mode";
+        }
+        else{
+            modeButton.textContent = "Switch to Eraser mode";
+        }
     }
 
     private changeColour(){
@@ -99,17 +147,24 @@ class BlissDraw{
         this.changeColour();
     }
 
+    private modeEventHandler = () => {
+        this.switchModes();
+    }
+
     private releaseEventHandler = () => {
         this.paint = false;
+        this.drawingMode = false;
         this.redraw();
     }
 
     private cancelEventHandler = () => {
         this.paint = false;
+        this.drawingMode = false;
     }
     
     private pressEventHandler = (e: MouseEvent | TouchEvent) => {
         //handle the mouse position
+        this.drawingMode = true;
         let mouseX = (e as TouchEvent).changedTouches ?
                      (e as TouchEvent).changedTouches[0].pageX :
                      (e as MouseEvent).pageX;

@@ -6,21 +6,33 @@ var BlissDraw = /** @class */ (function () {
         this.clickX = [];
         this.clickY = [];
         this.clickDrag = [];
+        this.eraseX = [];
+        this.eraseY = [];
+        this.eraseDrag = [];
+        //drawing modes
+        this.drawingMode = false;
+        this.eraserMode = false;
         this.clearEventHandler = function () {
             _this.clearCanvas();
         };
         this.colourEventHandler = function () {
             _this.changeColour();
         };
+        this.modeEventHandler = function () {
+            _this.switchModes();
+        };
         this.releaseEventHandler = function () {
             _this.paint = false;
+            _this.drawingMode = false;
             _this.redraw();
         };
         this.cancelEventHandler = function () {
             _this.paint = false;
+            _this.drawingMode = false;
         };
         this.pressEventHandler = function (e) {
             //handle the mouse position
+            _this.drawingMode = true;
             var mouseX = e.changedTouches ?
                 e.changedTouches[0].pageX :
                 e.pageX;
@@ -80,6 +92,7 @@ var BlissDraw = /** @class */ (function () {
         //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
         document.getElementById('colour').addEventListener("click", this.colourEventHandler);
+        document.getElementById('modes').addEventListener("click", this.modeEventHandler);
         document.getElementById('sizeSlider').addEventListener("input", function () {
             var currentSize = document.getElementById('sizeSlider').value;
             _this.context.lineWidth = parseInt(currentSize);
@@ -90,25 +103,49 @@ var BlissDraw = /** @class */ (function () {
         var context = this.context;
         var clickDrag = this.clickDrag;
         var clickY = this.clickY;
+        var eraseX = this.eraseX;
+        var eraseY = this.eraseY;
+        var eraseDrag = this.eraseDrag;
         //Draw the path of the line
-        for (var i = 0; i < clickX.length; ++i) {
-            context.beginPath();
-            if (clickDrag[i] && i) {
-                //Draw the dragged path
-                context.moveTo(clickX[i - 1], clickY[i - 1]);
+        if (!this.eraserMode) {
+            for (var i = 0; i < clickX.length; ++i) {
+                context.beginPath();
+                if (clickDrag[i] && i) {
+                    //Draw the dragged path
+                    context.moveTo(clickX[i - 1], clickY[i - 1]);
+                }
+                else {
+                    context.moveTo(clickX[i] - 1, clickY[i]);
+                }
+                context.lineTo(clickX[i], clickY[i]);
+                context.stroke();
             }
-            else {
-                context.moveTo(clickX[i] - 1, clickY[i]);
-            }
-            context.lineTo(clickX[i], clickY[i]);
-            context.stroke();
+            context.closePath();
         }
-        context.closePath();
+        else {
+            //eraser functionality
+            for (var i = 0; i < eraseX.length; ++i) {
+                if (eraseDrag[i] && i) {
+                    context.clearRect(eraseX[i - 1], eraseY[i - 1], context.lineWidth, context.lineWidth);
+                }
+                else {
+                    context.clearRect(eraseX[i] - 1, eraseY[i], context.lineWidth, context.lineWidth);
+                }
+                context.clearRect(eraseX[i], eraseY[i], context.lineWidth, context.lineWidth);
+            }
+        }
     };
     BlissDraw.prototype.addClick = function (x, y, dragging) {
-        this.clickX.push(x);
-        this.clickY.push(y);
-        this.clickDrag.push(dragging);
+        if (!this.eraserMode) {
+            this.clickX.push(x);
+            this.clickY.push(y);
+            this.clickDrag.push(dragging);
+        }
+        else {
+            this.eraseX.push(x);
+            this.eraseY.push(y);
+            this.eraseDrag.push(dragging);
+        }
     };
     BlissDraw.prototype.clearCanvas = function () {
         //Reset canvas and arrays
@@ -116,6 +153,20 @@ var BlissDraw = /** @class */ (function () {
         this.clickX = [];
         this.clickY = [];
         this.clickDrag = [];
+        this.eraseX = [];
+        this.eraseY = [];
+        this.eraseDrag = [];
+    };
+    BlissDraw.prototype.switchModes = function () {
+        //Switch between drawing and eraser modes
+        var modeButton = document.getElementById('modes');
+        this.eraserMode = !this.eraserMode;
+        if (this.eraserMode) {
+            modeButton.textContent = "Switch to Drawing mode";
+        }
+        else {
+            modeButton.textContent = "Switch to Eraser mode";
+        }
     };
     BlissDraw.prototype.changeColour = function () {
         //Change the colour of the pen
