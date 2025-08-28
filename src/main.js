@@ -9,6 +9,8 @@ var BlissDraw = /** @class */ (function () {
         this.eraseX = [];
         this.eraseY = [];
         this.eraseDrag = [];
+        //line elements
+        this.clickColour = [];
         //drawing modes
         this.drawingMode = false;
         this.eraserMode = false;
@@ -106,6 +108,7 @@ var BlissDraw = /** @class */ (function () {
         var eraseX = this.eraseX;
         var eraseY = this.eraseY;
         var eraseDrag = this.eraseDrag;
+        var clickColour = this.clickColour;
         //Draw the path of the line
         if (!this.eraserMode) {
             for (var i = 0; i < clickX.length; ++i) {
@@ -118,6 +121,7 @@ var BlissDraw = /** @class */ (function () {
                     context.moveTo(clickX[i] - 1, clickY[i]);
                 }
                 context.lineTo(clickX[i], clickY[i]);
+                context.strokeStyle = clickColour[i];
                 context.stroke();
             }
             context.closePath();
@@ -140,6 +144,7 @@ var BlissDraw = /** @class */ (function () {
             this.clickX.push(x);
             this.clickY.push(y);
             this.clickDrag.push(dragging);
+            this.clickColour.push(this.context.strokeStyle);
         }
         else {
             this.eraseX.push(x);

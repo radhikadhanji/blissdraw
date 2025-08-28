@@ -12,6 +12,9 @@ class BlissDraw{
     private eraseY: number[] = [];
     private eraseDrag: boolean[] = [];
 
+    //line elements
+    private clickColour: string[] = [];
+
     //drawing modes
     private drawingMode = false;
     private eraserMode = false;
@@ -70,6 +73,7 @@ class BlissDraw{
         let eraseX = this.eraseX;
         let eraseY = this.eraseY;
         let eraseDrag = this.eraseDrag;
+        let clickColour = this.clickColour;
         //Draw the path of the line
         if(!this.eraserMode){
              for(let i = 0; i < clickX.length; ++i){
@@ -82,6 +86,7 @@ class BlissDraw{
                 context.moveTo(clickX[i] - 1, clickY[i]);
             }
             context.lineTo(clickX[i], clickY[i]);
+            context.strokeStyle = clickColour[i];
             context.stroke();
         }
         context.closePath();
@@ -106,6 +111,7 @@ class BlissDraw{
             this.clickX.push(x);
             this.clickY.push(y);
             this.clickDrag.push(dragging);
+            this.clickColour.push(this.context.strokeStyle as string);
         }
         else{
             this.eraseX.push(x);
