@@ -2,20 +2,11 @@ var BlissDraw = /** @class */ (function () {
     function BlissDraw() {
         var _this = this;
         this.paint = false;
-        //mouse elements
-        this.clickX = [];
-        this.clickY = [];
-        this.clickDrag = [];
-        this.eraseX = [];
-        this.eraseY = [];
-        this.eraseDrag = [];
-        this.eraseSize = [];
-        //line elements
-        this.clickColour = [];
-        this.clickSize = [];
         //drawing modes
         this.drawingMode = false;
         this.eraserMode = false;
+        //Lines array
+        this.lines = [];
         this.clearEventHandler = function () {
             _this.clearCanvas();
         };
@@ -103,71 +94,58 @@ var BlissDraw = /** @class */ (function () {
         });
     };
     BlissDraw.prototype.redraw = function () {
-        var clickX = this.clickX;
         var context = this.context;
-        var clickDrag = this.clickDrag;
-        var clickY = this.clickY;
-        var eraseX = this.eraseX;
-        var eraseY = this.eraseY;
-        var eraseDrag = this.eraseDrag;
-        var clickColour = this.clickColour;
-        var clickSize = this.clickSize;
-        var eraseSize = this.eraseSize;
+        var lines = this.lines;
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var i = 0; i < clickX.length; ++i) {
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            context.save();
+            if (line.mode == "erase") {
+                context.globalCompositeOperation = "destination-out";
+            }
+            else {
+                context.globalCompositeOperation = "source-over";
+                context.strokeStyle = line.colour;
+            }
             context.beginPath();
-            if (clickDrag[i] && i) {
+            context.lineWidth = line.size;
+            if (line.dragging && i) {
                 //Draw the dragged path if it exists
-                context.moveTo(clickX[i - 1], clickY[i - 1]);
+                context.moveTo(lines[i - 1].x, lines[i - 1].y);
             }
             else {
                 //Finish off the path
-                context.moveTo(clickX[i] - 1, clickY[i]);
+                context.moveTo(line.x - 1, line.y);
             }
-            context.lineTo(clickX[i], clickY[i]);
-            context.strokeStyle = clickColour[i];
-            context.lineWidth = clickSize[i];
+            context.lineTo(line.x, line.y);
             context.stroke();
-        }
-        context.closePath();
-        //eraser functionality
-        for (var i = 0; i < eraseX.length; ++i) {
-            if (eraseDrag[i] && i) {
-                context.clearRect(eraseX[i - 1], eraseY[i - 1], eraseSize[i], eraseSize[i]);
-            }
-            else {
-                context.clearRect(eraseX[i] - 1, eraseY[i], eraseSize[i], eraseSize[i]);
-            }
-            context.clearRect(eraseX[i], eraseY[i], eraseSize[i], eraseSize[i]);
+            context.closePath();
+            context.restore();
         }
     };
     BlissDraw.prototype.addClick = function (x, y, dragging) {
         if (!this.eraserMode) {
-            this.clickX.push(x);
-            this.clickY.push(y);
-            this.clickDrag.push(dragging);
-            this.clickColour.push(this.context.strokeStyle);
-            this.clickSize.push(this.context.lineWidth);
+            this.lines.push({
+                x: x,
+                y: y,
+                dragging: dragging,
+                size: this.context.lineWidth, colour: this.context.strokeStyle, mode: "draw"
+            });
         }
         else {
-            this.eraseX.push(x);
-            this.eraseY.push(y);
-            this.eraseDrag.push(dragging);
-            this.eraseSize.push(this.context.lineWidth);
+            this.lines.push({
+                x: x,
+                y: y,
+                dragging: dragging,
+                size: this.context.lineWidth, mode: "erase"
+            });
         }
     };
     BlissDraw.prototype.clearCanvas = function () {
         //Reset canvas and arrays
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.clickX = [];
-        this.clickY = [];
-        this.clickDrag = [];
-        this.eraseX = [];
-        this.eraseY = [];
-        this.eraseDrag = [];
-        this.clickColour = [];
-        this.clickSize = [];
+        this.lines = [];
     };
     BlissDraw.prototype.switchModes = function () {
         //Switch between drawing and eraser modes

@@ -1,25 +1,25 @@
+//Line objects
+    type Line = {
+        x: number,
+        y: number,
+        dragging: boolean,
+        size: number,
+        colour?: string,
+        mode: "draw" | "erase";
+    };
+
 class BlissDraw{
     //canvas elements
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private paint: boolean = false;
 
-    //mouse elements
-    private clickX: number[] = [];
-    private clickY: number[] = [];
-    private clickDrag: boolean[] = [];
-    private eraseX: number[] = [];
-    private eraseY: number[] = [];
-    private eraseDrag: boolean[] = [];
-    private eraseSize: number[] = [];
-
-    //line elements
-    private clickColour: string[] = [];
-    private clickSize: number[] = [];
-
     //drawing modes
     private drawingMode = false;
     private eraserMode = false;
+
+    //Lines array
+    private lines: Line[] = [];
 
     constructor() {
         //Create drawing elements
@@ -68,76 +68,55 @@ class BlissDraw{
     }
 
     private redraw(){
-        let clickX = this.clickX;
         let context = this.context;
-        let clickDrag = this.clickDrag;
-        let clickY = this.clickY;
-        let eraseX = this.eraseX;
-        let eraseY = this.eraseY;
-        let eraseDrag = this.eraseDrag;
-        let clickColour = this.clickColour;
-        let clickSize = this.clickSize;
-        let eraseSize = this.eraseSize;
+        let lines = this.lines;
 
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-             for(let i = 0; i < clickX.length; ++i){
+        for(let i = 0; i < lines.length; i++){
+            let line = lines[i];
+            context.save();
+            if(line.mode == "erase"){
+                context.globalCompositeOperation = "destination-out";
+            }
+            else{
+                context.globalCompositeOperation = "source-over";
+                context.strokeStyle = line.colour!;
+            }
             context.beginPath();
-            if(clickDrag[i] && i){
+            context.lineWidth = line.size;
+            if(line.dragging && i){
                 //Draw the dragged path if it exists
-                context.moveTo(clickX[i - 1], clickY[i - 1]);
+                context.moveTo(lines[i - 1].x, lines[i - 1].y);
             }
             else{
                 //Finish off the path
-                context.moveTo(clickX[i] - 1, clickY[i]);
+                context.moveTo(line.x - 1, line.y);
             }
-            context.lineTo(clickX[i], clickY[i]);
-            context.strokeStyle = clickColour[i];
-            context.lineWidth = clickSize[i];
+            context.lineTo(line.x, line.y);
             context.stroke();
+            context.closePath();
+            context.restore();
         }
-        context.closePath();
-
-            //eraser functionality
-            for(let i = 0; i < eraseX.length; ++i){
-                if(eraseDrag[i] && i){
-                    context.clearRect(eraseX[i - 1], eraseY[i - 1], eraseSize[i], eraseSize[i]);
-                }
-                else{
-                    context.clearRect(eraseX[i] - 1, eraseY[i], eraseSize[i], eraseSize[i]);
-                }
-                context.clearRect(eraseX[i], eraseY[i], eraseSize[i], eraseSize[i]);
-        }
-       
     }
 
     private addClick(x: number, y: number, dragging: boolean){
         if(!this.eraserMode){
-            this.clickX.push(x);
-            this.clickY.push(y);
-            this.clickDrag.push(dragging);
-            this.clickColour.push(this.context.strokeStyle as string);
-            this.clickSize.push(this.context.lineWidth);
+            this.lines.push({
+                x, y, dragging, size: this.context.lineWidth, colour: this.context.strokeStyle as string, mode:"draw"
+            });
         }
         else{
-            this.eraseX.push(x);
-            this.eraseY.push(y);
-            this.eraseDrag.push(dragging);
-            this.eraseSize.push(this.context.lineWidth);
+            this.lines.push({
+                x, y, dragging, size: this.context.lineWidth, mode:"erase"
+            });
         }
     }
 
     private clearCanvas(){
         //Reset canvas and arrays
         this.context.clearRect(0,0,this.canvas.width, this.canvas.height);
-        this.clickX = [];
-        this.clickY = [];
-        this.clickDrag = [];
-        this.eraseX = [];
-        this.eraseY = [];
-        this.eraseDrag = [];
-        this.clickColour = [];
-        this.clickSize = [];
+        this.lines = [];
     }
 
     private switchModes(){
