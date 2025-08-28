@@ -2,7 +2,7 @@ class BlissDraw{
     //canvas elements
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    private paint: boolean;
+    private paint: boolean = false;
 
     //mouse elements
     private clickX: number[] = [];
@@ -13,6 +13,9 @@ class BlissDraw{
         //Create drawing elements
         let canvas = document.getElementById('canvas') as HTMLCanvasElement;
         let context = canvas.getContext("2d");
+        if(!context){
+            throw new Error("There is no context!!!");
+        }
         context.lineCap = 'round';
         context.lineJoin = 'round';
         context.strokeStyle = 'black';
@@ -79,7 +82,7 @@ class BlissDraw{
     }
 
     private clearEventHandler = () => {
-        this.clearCanvas;
+        this.clearCanvas();
     }
 
     private releaseEventHandler = () => {
