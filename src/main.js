@@ -9,6 +9,7 @@ var BlissDraw = /** @class */ (function () {
         this.eraseX = [];
         this.eraseY = [];
         this.eraseDrag = [];
+        this.eraseSize = [];
         //line elements
         this.clickColour = [];
         this.clickSize = [];
@@ -111,6 +112,7 @@ var BlissDraw = /** @class */ (function () {
         var eraseDrag = this.eraseDrag;
         var clickColour = this.clickColour;
         var clickSize = this.clickSize;
+        var eraseSize = this.eraseSize;
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         for (var i = 0; i < clickX.length; ++i) {
@@ -132,12 +134,12 @@ var BlissDraw = /** @class */ (function () {
         //eraser functionality
         for (var i = 0; i < eraseX.length; ++i) {
             if (eraseDrag[i] && i) {
-                context.clearRect(eraseX[i - 1], eraseY[i - 1], context.lineWidth, context.lineWidth);
+                context.clearRect(eraseX[i - 1], eraseY[i - 1], eraseSize[i], eraseSize[i]);
             }
             else {
-                context.clearRect(eraseX[i] - 1, eraseY[i], context.lineWidth, context.lineWidth);
+                context.clearRect(eraseX[i] - 1, eraseY[i], eraseSize[i], eraseSize[i]);
             }
-            context.clearRect(eraseX[i], eraseY[i], context.lineWidth, context.lineWidth);
+            context.clearRect(eraseX[i], eraseY[i], eraseSize[i], eraseSize[i]);
         }
     };
     BlissDraw.prototype.addClick = function (x, y, dragging) {
@@ -152,6 +154,7 @@ var BlissDraw = /** @class */ (function () {
             this.eraseX.push(x);
             this.eraseY.push(y);
             this.eraseDrag.push(dragging);
+            this.eraseSize.push(this.context.lineWidth);
         }
     };
     BlissDraw.prototype.clearCanvas = function () {
