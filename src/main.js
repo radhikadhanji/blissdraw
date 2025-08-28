@@ -5,13 +5,20 @@ var BlissDraw = /** @class */ (function () {
         //drawing modes
         this.drawingMode = false;
         this.eraserMode = false;
-        //Lines array
+        //Lines arrays
         this.lines = [];
+        this.undoneLines = [];
         this.clearEventHandler = function () {
             _this.clearCanvas();
         };
         this.modeEventHandler = function () {
             _this.switchModes();
+        };
+        this.undoEventHandler = function () {
+            _this.undoLine();
+        };
+        this.redoEventHandler = function () {
+            _this.redoLine();
         };
         this.releaseEventHandler = function () {
             _this.paint = false;
@@ -92,6 +99,8 @@ var BlissDraw = /** @class */ (function () {
             var currentSize = document.getElementById('sizeSlider').value;
             _this.context.lineWidth = parseInt(currentSize);
         });
+        document.getElementById('undo').addEventListener("click", this.undoEventHandler);
+        document.getElementById('redo').addEventListener("click", this.redoEventHandler);
     };
     BlissDraw.prototype.redraw = function () {
         var context = this.context;
@@ -146,6 +155,7 @@ var BlissDraw = /** @class */ (function () {
         //Reset canvas and arrays
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.lines = [];
+        this.undoneLines = [];
     };
     BlissDraw.prototype.switchModes = function () {
         //Switch between drawing and eraser modes
@@ -157,6 +167,16 @@ var BlissDraw = /** @class */ (function () {
         else {
             modeButton.textContent = "Switch to Eraser mode";
         }
+    };
+    BlissDraw.prototype.undoLine = function () {
+        var prevLine = this.lines.pop();
+        this.undoneLines.unshift(prevLine);
+        this.redraw();
+    };
+    BlissDraw.prototype.redoLine = function () {
+        var prevLine = this.undoneLines.pop();
+        this.lines.unshift(prevLine);
+        this.redraw();
     };
     return BlissDraw;
 }());

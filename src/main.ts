@@ -18,8 +18,9 @@ class BlissDraw{
     private drawingMode = false;
     private eraserMode = false;
 
-    //Lines array
+    //Lines arrays
     private lines: Line[] = [];
+    private undoneLines: Line[] = [];
 
     constructor() {
         //Create drawing elements
@@ -65,6 +66,8 @@ class BlissDraw{
             let currentSize = (document.getElementById('sizeSlider') as HTMLInputElement).value;
             this.context.lineWidth = parseInt(currentSize);
         });
+        document.getElementById('undo').addEventListener("click", this.undoEventHandler);
+        document.getElementById('redo').addEventListener("click", this.redoEventHandler);
     }
 
     private redraw(){
@@ -117,6 +120,7 @@ class BlissDraw{
         //Reset canvas and arrays
         this.context.clearRect(0,0,this.canvas.width, this.canvas.height);
         this.lines = [];
+        this.undoneLines = [];
     }
 
     private switchModes(){
@@ -131,6 +135,18 @@ class BlissDraw{
         }
     }
 
+    private undoLine(){
+        var prevLine = this.lines.pop();
+        this.undoneLines.unshift(prevLine);
+        this.redraw();
+    }
+
+    private redoLine(){
+        var prevLine = this.undoneLines.pop();
+        this.lines.unshift(prevLine);
+        this.redraw();
+    }
+
 
     private clearEventHandler = () => {
         this.clearCanvas();
@@ -138,6 +154,14 @@ class BlissDraw{
 
     private modeEventHandler = () => {
         this.switchModes();
+    }
+
+    private undoEventHandler = () => {
+        this.undoLine();
+    }
+
+    private redoEventHandler = () => {
+        this.redoLine();
     }
 
     private releaseEventHandler = () => {
