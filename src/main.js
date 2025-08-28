@@ -65,6 +65,7 @@ var BlissDraw = /** @class */ (function () {
         this.createUserEvents();
     }
     BlissDraw.prototype.createUserEvents = function () {
+        var _this = this;
         var canvas = this.canvas;
         //Event listeners for all mouse movements
         canvas.addEventListener("mousedown", this.pressEventHandler);
@@ -76,8 +77,13 @@ var BlissDraw = /** @class */ (function () {
         canvas.addEventListener("touchmove", this.dragEventHandler);
         canvas.addEventListener("touchend", this.releaseEventHandler);
         canvas.addEventListener("touchcancel", this.cancelEventHandler);
+        //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
         document.getElementById('colour').addEventListener("click", this.colourEventHandler);
+        document.getElementById('sizeSlider').addEventListener("input", function () {
+            var currentSize = document.getElementById('sizeSlider').value;
+            _this.context.lineWidth = parseInt(currentSize);
+        });
     };
     BlissDraw.prototype.redraw = function () {
         var clickX = this.clickX;
