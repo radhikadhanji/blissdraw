@@ -175,7 +175,7 @@ var BlissDraw = /** @class */ (function () {
     };
     BlissDraw.prototype.redoLine = function () {
         var prevLine = this.undoneLines.pop();
-        this.lines.unshift(prevLine);
+        this.lines.push(prevLine);
         this.redraw();
     };
     return BlissDraw;

@@ -143,7 +143,7 @@ class BlissDraw{
 
     private redoLine(){
         var prevLine = this.undoneLines.pop();
-        this.lines.unshift(prevLine);
+        this.lines.push(prevLine);
         this.redraw();
     }
 
