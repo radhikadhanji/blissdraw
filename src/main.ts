@@ -51,7 +51,10 @@ class BlissDraw{
 
         //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
-        document.getElementById('colour').addEventListener("click", this.colourEventHandler);
+        document.getElementById('colour').addEventListener("input", () => {
+            let currentColour = (document.getElementById('colour') as HTMLInputElement).value;
+            this.context.strokeStyle = currentColour;
+        });
         document.getElementById('modes').addEventListener("click", this.modeEventHandler);
         document.getElementById('sizeSlider').addEventListener("input", () => {
             let currentSize = (document.getElementById('sizeSlider') as HTMLInputElement).value;
@@ -134,17 +137,9 @@ class BlissDraw{
         }
     }
 
-    private changeColour(){
-        //Change the colour of the pen
-        this.context.strokeStyle = "red";
-    }
 
     private clearEventHandler = () => {
         this.clearCanvas();
-    }
-
-    private colourEventHandler = () => {
-        this.changeColour();
     }
 
     private modeEventHandler = () => {

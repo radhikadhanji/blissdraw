@@ -15,9 +15,6 @@ var BlissDraw = /** @class */ (function () {
         this.clearEventHandler = function () {
             _this.clearCanvas();
         };
-        this.colourEventHandler = function () {
-            _this.changeColour();
-        };
         this.modeEventHandler = function () {
             _this.switchModes();
         };
@@ -91,7 +88,10 @@ var BlissDraw = /** @class */ (function () {
         canvas.addEventListener("touchcancel", this.cancelEventHandler);
         //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
-        document.getElementById('colour').addEventListener("click", this.colourEventHandler);
+        document.getElementById('colour').addEventListener("input", function () {
+            var currentColour = document.getElementById('colour').value;
+            _this.context.strokeStyle = currentColour;
+        });
         document.getElementById('modes').addEventListener("click", this.modeEventHandler);
         document.getElementById('sizeSlider').addEventListener("input", function () {
             var currentSize = document.getElementById('sizeSlider').value;
@@ -167,10 +167,6 @@ var BlissDraw = /** @class */ (function () {
         else {
             modeButton.textContent = "Switch to Eraser mode";
         }
-    };
-    BlissDraw.prototype.changeColour = function () {
-        //Change the colour of the pen
-        this.context.strokeStyle = "red";
     };
     return BlissDraw;
 }());
