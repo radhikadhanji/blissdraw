@@ -104,7 +104,7 @@ class BlissDraw{
             let line = lines[i];
             context.save();
             if(line.mode == "erase"){
-                context.globalCompositeOperation = "destination-out";
+                context.strokeStyle = this.backgroundColour;
             }
             else{
                 context.globalCompositeOperation = "source-over";
