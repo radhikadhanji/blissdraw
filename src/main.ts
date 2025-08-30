@@ -36,6 +36,13 @@ class BlissDraw{
 
         this.canvas = canvas;
         this.context = context;
+
+        const textBox = document.createElement('input');
+        const fileArea = document.getElementById('filename');
+        textBox.type = "text";
+        textBox.placeholder = "Enter a file name";
+        textBox.maxLength = 50;
+        fileArea.appendChild(textBox);
         
         this.redraw();
         this.createUserEvents();
@@ -154,7 +161,9 @@ class BlissDraw{
         const createEl = document.createElement('a');
         createEl.href = url;
         //Download the image
-        createEl.download = "blissdraw";
+        const fileNameInput = document.querySelector("#filename input") as HTMLInputElement;
+        let fileValue = fileNameInput?.value.trim() || "blissdraw";
+        createEl.download = fileValue;
         createEl.click();
         createEl.remove();
     }
