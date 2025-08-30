@@ -72,6 +72,7 @@ var BlissDraw = /** @class */ (function () {
         context.lineCap = 'round';
         context.lineJoin = 'round';
         context.strokeStyle = 'black';
+        context.fillStyle = 'white';
         context.lineWidth = 1;
         this.canvas = canvas;
         this.context = context;
@@ -117,6 +118,7 @@ var BlissDraw = /** @class */ (function () {
         var lines = this.lines;
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
             context.save();

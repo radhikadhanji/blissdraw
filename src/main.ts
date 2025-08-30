@@ -32,6 +32,7 @@ class BlissDraw{
         context.lineCap = 'round';
         context.lineJoin = 'round';
         context.strokeStyle = 'black';
+        context.fillStyle = 'white';
         context.lineWidth = 1;
 
         this.canvas = canvas;
@@ -84,6 +85,7 @@ class BlissDraw{
 
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         for(let i = 0; i < lines.length; i++){
             let line = lines[i];
             context.save();
