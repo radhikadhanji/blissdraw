@@ -2,6 +2,11 @@
     <head>
         <title>BlissDraw</title>
         <style>
+            .options{
+                display: flex;
+                gap: 20px;
+                font-size: 25px;
+            }
         </style>
     </head>
 
@@ -9,7 +14,8 @@
         <canvas id="canvas" width="500" height="500" style="border: 5px solid black;">
 
         </canvas>
-        <p id="clear">Clear</p>
+        <div class="options">
+            <p id="clear">Clear</p>
         <div>
             <input type="color" id="colour" name="colour" value="#000000" />
             <label for="color">Change Colour</label>
@@ -21,6 +27,8 @@
         <p id="modes">Switch Eraser/Pen Mode</p>
         <p id="undo">Undo</p>
         <p id="redo">Redo</p>
+        <p id="export">Export</p>
+        </div>
         <script src="main.js"></script>
     </body>
 </html>

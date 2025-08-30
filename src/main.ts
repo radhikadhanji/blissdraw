@@ -68,6 +68,7 @@ class BlissDraw{
         });
         document.getElementById('undo').addEventListener("click", this.undoEventHandler);
         document.getElementById('redo').addEventListener("click", this.redoEventHandler);
+        document.getElementById('export').addEventListener("click", this.exportEventHandler);
     }
 
     private redraw(){
@@ -147,6 +148,16 @@ class BlissDraw{
         this.redraw();
     }
 
+    private exportImage(){
+        //Convert the canvas to url and make anchor
+        let url = this.canvas.toDataURL("image/png");
+        const createEl = document.createElement('a');
+        createEl.href = url;
+        //Download the image
+        createEl.download = "blissdraw";
+        createEl.click();
+        createEl.remove();
+    }
 
     private clearEventHandler = () => {
         this.clearCanvas();
@@ -162,6 +173,10 @@ class BlissDraw{
 
     private redoEventHandler = () => {
         this.redoLine();
+    }
+
+    private exportEventHandler = () => {
+        this.exportImage();
     }
 
     private releaseEventHandler = () => {
