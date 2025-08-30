@@ -13,6 +13,7 @@ class BlissDraw{
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private paint: boolean = false;
+    private backgroundColour: string = "#ffffff";
 
     //drawing modes
     private drawingMode = false;
@@ -65,15 +66,26 @@ class BlissDraw{
 
         //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
+
+        //Colour inputs
         document.getElementById('colour').addEventListener("input", () => {
             let currentColour = (document.getElementById('colour') as HTMLInputElement).value;
             this.context.strokeStyle = currentColour;
         });
+        document.getElementById('background').addEventListener("input", () => {
+            let currentColour = (document.getElementById('background') as HTMLInputElement).value;
+            this.backgroundColour = currentColour;
+            this.redraw();
+        });
+
         document.getElementById('modes').addEventListener("click", this.modeEventHandler);
+
+        //Size inputs
         document.getElementById('sizeSlider').addEventListener("input", () => {
             let currentSize = (document.getElementById('sizeSlider') as HTMLInputElement).value;
             this.context.lineWidth = parseInt(currentSize);
         });
+
         document.getElementById('undo').addEventListener("click", this.undoEventHandler);
         document.getElementById('redo').addEventListener("click", this.redoEventHandler);
         document.getElementById('export').addEventListener("click", this.exportEventHandler);
@@ -82,9 +94,11 @@ class BlissDraw{
     private redraw(){
         let context = this.context;
         let lines = this.lines;
+        let backgroundColour = this.backgroundColour;
 
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.fillStyle = backgroundColour;
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         for(let i = 0; i < lines.length; i++){
             let line = lines[i];
@@ -131,6 +145,7 @@ class BlissDraw{
         this.context.clearRect(0,0,this.canvas.width, this.canvas.height);
         this.lines = [];
         this.undoneLines = [];
+        this.redraw();
     }
 
     private switchModes(){

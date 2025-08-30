@@ -2,6 +2,7 @@ var BlissDraw = /** @class */ (function () {
     function BlissDraw() {
         var _this = this;
         this.paint = false;
+        this.backgroundColour = "#ffffff";
         //drawing modes
         this.drawingMode = false;
         this.eraserMode = false;
@@ -100,11 +101,18 @@ var BlissDraw = /** @class */ (function () {
         canvas.addEventListener("touchcancel", this.cancelEventHandler);
         //Event listeners for buttons
         document.getElementById('clear').addEventListener("click", this.clearEventHandler);
+        //Colour inputs
         document.getElementById('colour').addEventListener("input", function () {
             var currentColour = document.getElementById('colour').value;
             _this.context.strokeStyle = currentColour;
         });
+        document.getElementById('background').addEventListener("input", function () {
+            var currentColour = document.getElementById('background').value;
+            _this.backgroundColour = currentColour;
+            _this.redraw();
+        });
         document.getElementById('modes').addEventListener("click", this.modeEventHandler);
+        //Size inputs
         document.getElementById('sizeSlider').addEventListener("input", function () {
             var currentSize = document.getElementById('sizeSlider').value;
             _this.context.lineWidth = parseInt(currentSize);
@@ -116,8 +124,10 @@ var BlissDraw = /** @class */ (function () {
     BlissDraw.prototype.redraw = function () {
         var context = this.context;
         var lines = this.lines;
+        var backgroundColour = this.backgroundColour;
         //Draw the path of the line
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.fillStyle = backgroundColour;
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
@@ -168,6 +178,7 @@ var BlissDraw = /** @class */ (function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.lines = [];
         this.undoneLines = [];
+        this.redraw();
     };
     BlissDraw.prototype.switchModes = function () {
         //Switch between drawing and eraser modes
