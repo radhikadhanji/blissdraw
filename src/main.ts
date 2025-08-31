@@ -8,6 +8,8 @@
         mode: "draw" | "erase";
     };
 
+    type Stroke = Line[];
+
 class BlissDraw{
     //canvas elements
     private canvas: HTMLCanvasElement;
@@ -20,8 +22,9 @@ class BlissDraw{
     private eraserMode = false;
 
     //Lines arrays
-    private lines: Line[] = [];
-    private undoneLines: Line[] = [];
+    private lines: Stroke[] = [];
+    private undoneLines: Stroke[] = [];
+    private currentStroke: Stroke = [];
 
     constructor() {
         //Create drawing elements
@@ -92,52 +95,55 @@ class BlissDraw{
     }
 
     private redraw(){
-        let context = this.context;
-        let lines = this.lines;
-        let backgroundColour = this.backgroundColour;
+    let context = this.context;
 
-        //Draw the path of the line
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        context.fillStyle = backgroundColour;
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        for(let i = 0; i < lines.length; i++){
-            let line = lines[i];
+    // Reset the background and everything
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    context.fillStyle = this.backgroundColour;
+    context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const drawStroke = (stroke: Stroke) => {
+        //Drawing all strokes helper method
+        for (let i = 0; i < stroke.length; i++) {
+            const point = stroke[i];
             context.save();
-            if(line.mode == "erase"){
-                context.strokeStyle = this.backgroundColour;
-            }
-            else{
-                context.globalCompositeOperation = "source-over";
-                context.strokeStyle = line.colour!;
-            }
             context.beginPath();
-            context.lineWidth = line.size;
-            if(line.dragging && i){
-                //Draw the dragged path if it exists
-                context.moveTo(lines[i - 1].x, lines[i - 1].y);
+            context.lineWidth = point.size;
+            context.strokeStyle = point.mode === "erase" ? this.backgroundColour : point.colour!;
+
+            if (point.dragging && i > 0) {
+                //Move to the next part of the stroke
+                context.moveTo(stroke[i - 1].x, stroke[i - 1].y);
+            } else {
+                //Finish off the stroke
+                context.moveTo(point.x - 1, point.y);
             }
-            else{
-                //Finish off the path
-                context.moveTo(line.x - 1, line.y);
-            }
-            context.lineTo(line.x, line.y);
+            context.lineTo(point.x, point.y);
             context.stroke();
             context.closePath();
             context.restore();
         }
+    };
+    for (const stroke of this.lines) {
+        drawStroke(stroke);
     }
+    if (this.paint && this.currentStroke.length > 0) {
+        drawStroke(this.currentStroke);
+    }
+}
+
 
     private addClick(x: number, y: number, dragging: boolean){
-        if(!this.eraserMode){
-            this.lines.push({
-                x, y, dragging, size: this.context.lineWidth, colour: this.context.strokeStyle as string, mode:"draw"
-            });
-        }
-        else{
-            this.lines.push({
-                x, y, dragging, size: this.context.lineWidth, mode:"erase"
-            });
-        }
+        let line: Line = {
+        x,
+        y,
+        dragging,
+        size: this.context.lineWidth,
+        colour: !this.eraserMode ? this.context.strokeStyle as string : undefined,
+        mode: this.eraserMode ? "erase" : "draw"
+        };
+        //Add line to the stroke
+        this.currentStroke.push(line);
     }
 
     private clearCanvas(){
@@ -162,14 +168,18 @@ class BlissDraw{
 
     private undoLine(){
         var prevLine = this.lines.pop();
-        this.undoneLines.unshift(prevLine);
-        this.redraw();
+        if(prevLine){
+            this.undoneLines.push(prevLine);
+            this.redraw();
+        }
     }
 
     private redoLine(){
         var prevLine = this.undoneLines.pop();
-        this.lines.push(prevLine);
-        this.redraw();
+        if(prevLine){
+            this.lines.push(prevLine);
+            this.redraw();
+        }
     }
 
     private exportImage(){
@@ -208,6 +218,12 @@ class BlissDraw{
     private releaseEventHandler = () => {
         this.paint = false;
         this.drawingMode = false;
+        if(this.currentStroke.length > 0){
+            //If there's a current stroke, add this on 
+            this.lines.push(this.currentStroke);
+            this.currentStroke = [];
+            this.undoneLines = [];
+        }
         this.redraw();
     }
 

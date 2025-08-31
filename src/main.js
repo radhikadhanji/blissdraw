@@ -9,6 +9,7 @@ var BlissDraw = /** @class */ (function () {
         //Lines arrays
         this.lines = [];
         this.undoneLines = [];
+        this.currentStroke = [];
         this.clearEventHandler = function () {
             _this.clearCanvas();
         };
@@ -27,6 +28,12 @@ var BlissDraw = /** @class */ (function () {
         this.releaseEventHandler = function () {
             _this.paint = false;
             _this.drawingMode = false;
+            if (_this.currentStroke.length > 0) {
+                //If there's a current stroke, add this on 
+                _this.lines.push(_this.currentStroke);
+                _this.currentStroke = [];
+                _this.undoneLines = [];
+            }
             _this.redraw();
         };
         this.cancelEventHandler = function () {
@@ -122,56 +129,53 @@ var BlissDraw = /** @class */ (function () {
         document.getElementById('export').addEventListener("click", this.exportEventHandler);
     };
     BlissDraw.prototype.redraw = function () {
+        var _this = this;
         var context = this.context;
-        var lines = this.lines;
-        var backgroundColour = this.backgroundColour;
-        //Draw the path of the line
+        // Reset the background and everything
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        context.fillStyle = backgroundColour;
+        context.fillStyle = this.backgroundColour;
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            context.save();
-            if (line.mode == "erase") {
-                context.strokeStyle = this.backgroundColour;
+        var drawStroke = function (stroke) {
+            //Drawing all strokes helper method
+            for (var i = 0; i < stroke.length; i++) {
+                var point = stroke[i];
+                context.save();
+                context.beginPath();
+                context.lineWidth = point.size;
+                context.strokeStyle = point.mode === "erase" ? _this.backgroundColour : point.colour;
+                if (point.dragging && i > 0) {
+                    //Move to the next part of the stroke
+                    context.moveTo(stroke[i - 1].x, stroke[i - 1].y);
+                }
+                else {
+                    //Finish off the stroke
+                    context.moveTo(point.x - 1, point.y);
+                }
+                context.lineTo(point.x, point.y);
+                context.stroke();
+                context.closePath();
+                context.restore();
             }
-            else {
-                context.globalCompositeOperation = "source-over";
-                context.strokeStyle = line.colour;
-            }
-            context.beginPath();
-            context.lineWidth = line.size;
-            if (line.dragging && i) {
-                //Draw the dragged path if it exists
-                context.moveTo(lines[i - 1].x, lines[i - 1].y);
-            }
-            else {
-                //Finish off the path
-                context.moveTo(line.x - 1, line.y);
-            }
-            context.lineTo(line.x, line.y);
-            context.stroke();
-            context.closePath();
-            context.restore();
+        };
+        for (var _i = 0, _a = this.lines; _i < _a.length; _i++) {
+            var stroke = _a[_i];
+            drawStroke(stroke);
+        }
+        if (this.paint && this.currentStroke.length > 0) {
+            drawStroke(this.currentStroke);
         }
     };
     BlissDraw.prototype.addClick = function (x, y, dragging) {
-        if (!this.eraserMode) {
-            this.lines.push({
-                x: x,
-                y: y,
-                dragging: dragging,
-                size: this.context.lineWidth, colour: this.context.strokeStyle, mode: "draw"
-            });
-        }
-        else {
-            this.lines.push({
-                x: x,
-                y: y,
-                dragging: dragging,
-                size: this.context.lineWidth, mode: "erase"
-            });
-        }
+        var line = {
+            x: x,
+            y: y,
+            dragging: dragging,
+            size: this.context.lineWidth,
+            colour: !this.eraserMode ? this.context.strokeStyle : undefined,
+            mode: this.eraserMode ? "erase" : "draw"
+        };
+        //Add line to the stroke
+        this.currentStroke.push(line);
     };
     BlissDraw.prototype.clearCanvas = function () {
         //Reset canvas and arrays
@@ -193,13 +197,17 @@ var BlissDraw = /** @class */ (function () {
     };
     BlissDraw.prototype.undoLine = function () {
         var prevLine = this.lines.pop();
-        this.undoneLines.unshift(prevLine);
-        this.redraw();
+        if (prevLine) {
+            this.undoneLines.push(prevLine);
+            this.redraw();
+        }
     };
     BlissDraw.prototype.redoLine = function () {
         var prevLine = this.undoneLines.pop();
-        this.lines.push(prevLine);
-        this.redraw();
+        if (prevLine) {
+            this.lines.push(prevLine);
+            this.redraw();
+        }
     };
     BlissDraw.prototype.exportImage = function () {
         //Convert the canvas to url and make anchor
