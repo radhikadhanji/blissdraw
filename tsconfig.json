@@ -1,12 +1,12 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "sourceMap": true,
-        "lib": [
-            "es5",
-            "dom"
-        ]
-    },
-    "noUnusedLocals": true,
-    "module": "commonjs"
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["es5", "dom"],
+    "noUnusedLocals": true
+  },
+  "include": ["src"]
 }
