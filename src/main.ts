@@ -92,9 +92,6 @@ class BlissDraw{
         document.getElementById('undo').addEventListener("click", this.undoEventHandler);
         document.getElementById('redo').addEventListener("click", this.redoEventHandler);
         document.getElementById('export').addEventListener("click", this.exportEventHandler);
-
-        //Music upload handler
-        
     }
 
     private redraw(){
