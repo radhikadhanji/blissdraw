@@ -14,4 +14,5 @@ You can now open it on localhost: http://localhost:8000
 # Credits
 Cute Notebook font: https://www.fontspace.com/cute-notebook-font-f142475
 Background: https://pixelmoondust.neocities.org/archives/archivedtiles/colours/pink
+Original Typescript tutorial: https://kernhanda.github.io/tutorial-typescript-canvas-drawing/
 
