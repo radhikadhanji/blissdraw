@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <title>BlissDraw</title>
+        <style>
+            .options{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                font-size: 23px;
+                margin-top: 20px;
+            }
+
+            .canvasarea{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            @font-face {
+                font-family: 'CuteNotebook';
+                src: url('assets/CuteNotebookPersonalUse-7OAEV.ttf');
+            }
+
+            body{
+                font-family: "CuteNotebook";
+                font-weight: normal;
+                font-style: normal;
+                background-image: url('assets/bgpinklattice.gif.jpeg');
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div class="canvasarea">
+            <canvas id="canvas" width="800" height="550" style="border: 5px dashed palevioletred;">
+        </canvas>
+        </div>
+        <div class="options">
+            <p id="clear">Clear</p>
+        <div>
+            <input type="color" id="colour" name="colour" value="#000000" />
+            <label for="color">Change Colour</label>
+        </div>
+        <div>
+            <input type="color" id="background" name="background" value="#ffffff" />
+            <label for="color">Change Background Colour</label>
+        </div>
+        <div class="slidecontainer">
+            Change Size
+            <input type="range" min="1" max="30" value="1" class="slider" id="sizeSlider">
+        </div>
+        <p id="modes">Switch Eraser/Pen Mode</p>
+        <p id="undo">Undo</p>
+        <p id="redo">Redo</p>
+        <p id="export">Export</p>
+        <div id="filename"></div>
+        </div>
+        <script src="./main.js"></script>
+    </body>
+</html>

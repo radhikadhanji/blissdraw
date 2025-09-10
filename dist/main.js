@@ -3,8 +3,6 @@ var BlissDraw = /** @class */ (function () {
         var _this = this;
         this.paint = false;
         this.backgroundColour = "#ffffff";
-        //drawing modes
-        this.drawingMode = false;
         this.eraserMode = false;
         //Lines arrays
         this.lines = [];
@@ -27,7 +25,6 @@ var BlissDraw = /** @class */ (function () {
         };
         this.releaseEventHandler = function () {
             _this.paint = false;
-            _this.drawingMode = false;
             if (_this.currentStroke.length > 0) {
                 //If there's a current stroke, add this on 
                 _this.lines.push(_this.currentStroke);
@@ -38,11 +35,8 @@ var BlissDraw = /** @class */ (function () {
         };
         this.cancelEventHandler = function () {
             _this.paint = false;
-            _this.drawingMode = false;
         };
         this.pressEventHandler = function (e) {
-            //handle the mouse position
-            _this.drawingMode = true;
             var mouseX = e.changedTouches ?
                 e.changedTouches[0].pageX :
                 e.pageX;
