@@ -4,9 +4,7 @@
   "description": "A simple drawing program made in Typescript.",
   "main": "dist/main.js",
   "scripts": {
-    "start": "node dist/main.js",
-    "build": "tsc && cp public/index.html dist/",
-    "heroku-postbuild": "npm run build"
+    "build": "tsc && cp -r public/* dist/"
   },
   "engines": {
     "node": "18.x"
