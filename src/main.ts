@@ -17,8 +17,6 @@ class BlissDraw{
     private paint: boolean = false;
     private backgroundColour: string = "#ffffff";
 
-    //drawing modes
-    private drawingMode = false;
     private eraserMode = false;
 
     //Lines arrays
@@ -217,7 +215,6 @@ class BlissDraw{
 
     private releaseEventHandler = () => {
         this.paint = false;
-        this.drawingMode = false;
         if(this.currentStroke.length > 0){
             //If there's a current stroke, add this on 
             this.lines.push(this.currentStroke);
@@ -229,12 +226,9 @@ class BlissDraw{
 
     private cancelEventHandler = () => {
         this.paint = false;
-        this.drawingMode = false;
     }
     
     private pressEventHandler = (e: MouseEvent | TouchEvent) => {
-        //handle the mouse position
-        this.drawingMode = true;
         let mouseX = (e as TouchEvent).changedTouches ?
                      (e as TouchEvent).changedTouches[0].pageX :
                      (e as MouseEvent).pageX;
