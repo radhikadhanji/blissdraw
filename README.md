@@ -4,12 +4,9 @@ A small drawing program intended to help me learn TypeScript. Users can draw on 
 
 <img width="1428" height="692" alt="image" src="https://github.com/user-attachments/assets/4173305e-2938-49b9-8d4d-dda10a046588" />
 
-# Running Instructions
+# Live Demo
 
-To run the program, download this repository. In the command line, cd into the project root folder, then run:
-python3 -m http.server 8000
-
-You can now open it on localhost: http://localhost:8000
+View the live demo at: https://blissdraw.netlify.app
 
 # Credits
 Cute Notebook font: https://www.fontspace.com/cute-notebook-font-f142475
