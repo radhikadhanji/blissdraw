@@ -6,9 +6,13 @@ A small drawing program intended to help me learn TypeScript. Users can draw on 
 
 # Running Instructions
 
-To run the program, download this repository, then run npx tsc in your command line. 
+To run the program, download this repository. In the command line, cd into the project root folder, then run:
+python3 -m http.server 8000
+
+You can now open it on localhost: http://localhost:8000
 
 # Credits
 Cute Notebook font: https://www.fontspace.com/cute-notebook-font-f142475
 Background: https://pixelmoondust.neocities.org/archives/archivedtiles/colours/pink
+Original Typescript tutorial: https://kernhanda.github.io/tutorial-typescript-canvas-drawing/
 
